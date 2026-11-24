@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClearDICOM — Offline DICOM PHI Anonymizer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>ClearDICOM</h1>
+      <p class="subtitle">100% client-side DICOM metadata inspector &amp; PHI scrubber. Zero uploads. Works offline.</p>
+    </header>
+
+    <section class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" accept=".dcm,application/dicom" hidden />
+      <p>Drag &amp; drop a <strong>.dcm</strong> file here, or <button type="button" id="browseBtn">browse</button></p>
+      <span class="badge">Local Processing Only</span>
+    </section>
+
+    <section id="results" class="hidden">
+      <div class="toolbar">
+        <span id="fileName"></span>
+        <button type="button" id="scrubBtn" class="primary">Scrub PHI &amp; Download</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Tag</th>
+            <th>Field Name</th>
+            <th>Current Value</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="tagTable"></tbody>
+      </table>
+    </section>
+
+    <p id="errorBox" class="error hidden"></p>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
