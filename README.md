@@ -7,6 +7,7 @@ Medical students, clinicians, and researchers frequently need to strip Protected
 
 ## Features
 - **Zero Uploads:** All binary parsing and scrubbing happens locally in browser memory.
+- **1-Click Sample Demo:** Generate a synthetic `.dcm` file directly in browser memory to test PHI inspection and scrubbing immediately.
 - **Byte-Safe Anonymization:** Overwrites PHI tag values in-place while preserving exact byte lengths and pixel data integrity.
 - **Offline Ready:** Open `index.html` directly or host on GitHub Pages.
 

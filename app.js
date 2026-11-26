@@ -20,6 +20,7 @@ let detectedTags = [];
 const dropZone = document.getElementById("dropZone");
 const fileInput = document.getElementById("fileInput");
 const browseBtn = document.getElementById("browseBtn");
+const sampleBtn = document.getElementById("sampleBtn");
 const results = document.getElementById("results");
 const tagTable = document.getElementById("tagTable");
 const fileNameEl = document.getElementById("fileName");
@@ -28,6 +29,7 @@ const errorBox = document.getElementById("errorBox");
 
 browseBtn.addEventListener("click", () => fileInput.click());
 fileInput.addEventListener("change", (e) => handleFile(e.target.files[0]));
+sampleBtn.addEventListener("click", loadSampleDicom);
 
 dropZone.addEventListener("dragover", (e) => {
   e.preventDefault();
@@ -64,6 +66,63 @@ function handleFile(file) {
     }
   };
   reader.readAsArrayBuffer(file);
+}
+
+function buildSampleDicom() {
+  const encoder = new TextEncoder();
+  const sampleFields = [
+    [0x0008, 0x0050, "SH", "ACC-2026-0042"],
+    [0x0008, 0x0080, "LO", "GENERAL TEACHING HOSPITAL"],
+    [0x0008, 0x0090, "PN", "SMITH^JOHN^DR"],
+    [0x0010, 0x0010, "PN", "DOE^JANE"],
+    [0x0010, 0x0020, "LO", "MRN-984321"],
+    [0x0010, 0x0030, "DA", "19880514"],
+    [0x0010, 0x0040, "CS", "F"]
+  ];
+
+  const chunks = [];
+  const preamble = new Uint8Array(132);
+  preamble.set(encoder.encode("DICM"), 128);
+  chunks.push(preamble);
+
+  sampleFields.forEach(([group, element, vr, rawVal]) => {
+    const valStr = rawVal.length % 2 === 1 ? rawVal + " " : rawVal;
+    const valBytes = encoder.encode(valStr);
+    const entry = new Uint8Array(8 + valBytes.length);
+    const view = new DataView(entry.buffer);
+    view.setUint16(0, group, true);
+    view.setUint16(2, element, true);
+    entry.set(encoder.encode(vr), 4);
+    view.setUint16(6, valBytes.length, true);
+    entry.set(valBytes, 8);
+    chunks.push(entry);
+  });
+
+  // Append dummy Pixel Data tag (7FE0,0010)
+  const pixelChunk = new Uint8Array(16);
+  const pixelView = new DataView(pixelChunk.buffer);
+  pixelView.setUint16(0, 0x7fe0, true);
+  pixelView.setUint16(2, 0x0010, true);
+  pixelChunk.set(encoder.encode("OB"), 4);
+  pixelView.setUint32(8, 4, true);
+  chunks.push(pixelChunk);
+
+  const totalLen = chunks.reduce((sum, c) => sum + c.length, 0);
+  const combined = new Uint8Array(totalLen);
+  let pos = 0;
+  chunks.forEach((c) => {
+    combined.set(c, pos);
+    pos += c.length;
+  });
+  return combined;
+}
+
+function loadSampleDicom() {
+  errorBox.classList.add("hidden");
+  currentFileName = "sample_chest_xray.dcm";
+  currentBuffer = buildSampleDicom();
+  detectedTags = parseDicomPhi(currentBuffer);
+  renderTable(detectedTags);
 }
 
 function parseDicomPhi(bytes) {
