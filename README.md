@@ -1,15 +1,43 @@
 # ClearDICOM
 
-A lightweight, zero-backend, offline-first DICOM metadata inspector and PHI anonymizer built with vanilla HTML, CSS, and JavaScript.
+A zero-dependency, offline-first DICOM metadata inspector and byte-safe PHI anonymizer for **Node.js** and **browsers**.
 
-## Why ClearDICOM?
-Medical students, clinicians, and researchers frequently need to strip Protected Health Information (PHI) from `.dcm` files before sharing cases for teaching or research. Uploading patient scans to online tools violates privacy standards, while desktop suites are heavy to install. ClearDICOM runs 100% locally in your browser with zero external dependencies.
+**Live Demo:** https://kamal-alfalahi.github.io/clear-dicom/
 
-## Features
-- **Zero Uploads:** All binary parsing and scrubbing happens locally in browser memory.
-- **1-Click Sample Demo:** Generate a synthetic `.dcm` file directly in browser memory to test PHI inspection and scrubbing immediately.
-- **Byte-Safe Anonymization:** Overwrites PHI tag values in-place while preserving exact byte lengths and pixel data integrity.
-- **Offline Ready:** Open `index.html` directly or host on GitHub Pages.
+## Installation
+
+```bash
+npm install clear-dicom
+```
+
+## Usage (Node.js & Browser ES Modules)
+
+```javascript
+import fs from "node:fs";
+import { parseDicomPhi, scrubDicomPhi } from "clear-dicom";
+
+const rawBytes = new Uint8Array(fs.readFileSync("scan.dcm"));
+
+// 1. Inspect PHI tags
+const tags = parseDicomPhi(rawBytes);
+console.log(tags);
+
+// 2. Scrub PHI in-place (preserves exact byte length & pixel data)
+const { buffer } = scrubDicomPhi(rawBytes);
+fs.writeFileSync("anonymized_scan.dcm", buffer);
+```
+
+## API
+
+- `parseDicomPhi(bytes: Uint8Array)` — Returns an array of detected HIPAA PHI tags with values and byte offsets.
+- `scrubDicomPhi(bytes: Uint8Array, replacement?: string)` — Returns `{ buffer, scrubbedTags }` with PHI overwritten in-place.
+- `buildSampleDicom()` — Generates a synthetic DICOM Part 10 `Uint8Array` in memory for testing.
+
+## Running Tests
+
+```bash
+npm test
+```
 
 ## License
 MIT

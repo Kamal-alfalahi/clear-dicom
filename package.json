@@ -1,0 +1,38 @@
+{
+  "name": "clear-dicom",
+  "version": "0.3.0",
+  "description": "Zero-dependency, offline-first DICOM metadata inspector and byte-safe PHI anonymizer for Node.js and browsers.",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "dicom",
+    "phi",
+    "anonymizer",
+    "de-identification",
+    "hipaa",
+    "radiology",
+    "medical-imaging",
+    "offline-first"
+  ],
+  "author": "Kamal Alfalahi",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kamal-alfalahi/clear-dicom.git"
+  },
+  "homepage": "https://kamal-alfalahi.github.io/clear-dicom/",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
